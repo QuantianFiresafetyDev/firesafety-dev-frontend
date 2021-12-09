@@ -1,0 +1,161 @@
+.fire_extinguisher{
+	font-size: 18px;
+    margin-left: 10px;
+	font-weight: bold;
+
+}
+
+.side_three_dots{
+    margin-right: auto;
+    margin-right: 42px;
+    font-size: 23px;
+}
+
+
+.view_inspection{
+    font-size: 16px;
+    margin-left: 10px;
+	font-weight: bold;
+    margin-top: 15px;
+
+}
+
+.comments{
+	width: 345px;
+}
+
+.w-100.comments_sp{
+   padding-top: 15px;
+}
+
+.col.comments_sp1{
+ font-weight: bold;
+
+}
+
+.w-100.comments_sp2{
+
+padding-top: 7px;
+}
+
+.sidebar_placing{
+
+position: absolute;
+  top: 2px;
+  right: 16px;
+  font-size: 18px;
+}
+
+
+
+.cross{
+
+    margin-right: auto;
+    margin-right: 30px;
+    font-size: 23px;
+
+
+}
+
+.w-100.fire_space1{
+
+    padding-top: 7px ;
+}
+
+.w-100.fire_details1{
+
+    padding-top: 15px;
+}
+
+.col.fire_details2{
+
+    font-weight: bold;
+}
+
+.w-100.fire_details3{
+
+ padding-top: 7px;
+}
+
+.w-100.fire_details4{
+
+   padding-top: 8px;
+}
+
+.w-100.insp_reports1{
+    padding-top: 15px;
+}
+
+.col.insp_reports2{
+    font-weight: bold;
+}
+
+.w-100.insp_reports3{
+  padding-top: 9px;
+}
+
+.w-100.insp_reports4{
+    padding-top: 9px;
+}
+
+.w-100.insp_reports5{
+    padding-top: 9px;
+}
+
+/* switch */
+.switch-field {
+	display: flex;
+	margin-bottom: 10px;
+	overflow: hidden;
+}
+
+.switch-field input {
+	position: absolute !important;
+	clip: rect(0, 0, 0, 0);
+	height: 1px;
+	width: 1px;
+	border: 0;
+	overflow: hidden;
+}
+
+.switch-field label {
+	background-color:white;
+	color: white;
+	font-size: 14px;
+	line-height: 1;
+	text-align: center;
+	padding: 8px 16px;
+	margin-right: -1px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+	transition: all 0.1s ease-in-out;
+}
+
+.switch-field label:hover {
+	cursor: pointer;
+}
+
+.switch-field input:checked + label {
+	background-color: black;
+	
+	box-shadow: none;
+}
+
+.switch-field label:first-of-type {
+   border-radius: 12px;
+   margin:  4px;
+
+	
+
+}
+
+.switch-field label:last-of-type {
+    border-radius: 12px;
+	margin:    4px;
+
+	
+
+	
+}
+
+
