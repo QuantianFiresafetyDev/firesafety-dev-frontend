@@ -111,12 +111,13 @@ function AddUsers() {
   }, [])
 
   const handleSubmit = async (e) => {
-    let EMPLOYEE_ID_NUMERIC_PART = employees.length===0 ? `001` : ((employees.length<8) ? `00${(employees.length+1).toString()}` : ((employees.length<98) ? `0${(employees.length+1).toString()}` : `${(employees.length+1).toString()}`))
+    let EMPLOYEE_ID_NUMERIC_PART = employees.length===0 ? `001` : ((employees.length<9) ? `00${(employees.length+1).toString()}` : ((employees.length<98) ? `0${(employees.length+1).toString()}` : `${(employees.length+1).toString()}`))
     let phoneNumAllowedStructure = new RegExp(/^\d+$/)
-
-    if((phone.length !== 10) || (phoneNumAllowedStructure.test(phone))){
-      errorToaster(`Contact phone should have 10 numeric digits with no space`)
-    } else {
+    console.log('phone check: ', phone.length !== 10 || phoneNumAllowedStructure.test(phone))
+    // if((phone.length !== 10 || phoneNumAllowedStructure.test(phone))){
+    // if(phone.length !== 10){
+    //   errorToaster(`Contact phone should have 10 numeric digits with no space`)
+    // } else {
       e.preventDefault();
       const payload = {
         firstname: firstname,
@@ -129,7 +130,8 @@ function AddUsers() {
         created_by: createdby,
         password: password,
       }
-      const result = await fetch(ADD_USER_API,{
+      console.log('adduser payload: ', payload)
+      const result = await fetch(`${API_URL_BASE}/user/addUser`,{
         method:'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +145,7 @@ function AddUsers() {
         console.log("DEBUG",result)
         if(result.success){
           // history.push('/viewAudits')
-          console.log(successToaster)
+          console.log(result)
           successToaster(result.message)
           dispatch(addUsers(result.body))  
           // console.log(result.body.token)
@@ -179,7 +181,7 @@ function AddUsers() {
       //   dispatch(addUser(response.data.body))
       //   history.push("/viewUsers");
       // }
-    }
+    // }
    
   }
   return (
@@ -230,7 +232,7 @@ function AddUsers() {
                           <select required name="role" id="role" value={role} 
                           onChange={(e) => setRole(e.target.value)} className="form-control">
                             <option hidden value>Select Role</option>
-                            <option value="User">auditor</option>
+                            <option value="Auditor">auditor</option>
                             <option value="Admin">admin</option>
                           </select>
                         </div>

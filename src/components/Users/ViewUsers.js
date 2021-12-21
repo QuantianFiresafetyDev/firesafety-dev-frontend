@@ -87,76 +87,7 @@ const ViewUsersWrapper = styled.div`
    }
 `;
 
-// const NavSpace = styled.div`
-//   margin-left: 1rem;
-// `
-
-
-export const userData = [{  
-  employeeid: 1,
-  first_name: 'Rajesh',  
-  last_name: 'Kumar',
-  role: 'user',
-  email: "rajesh.kumar@jeevanraksha.com",
-  phone: "9875698758",
-  createddate: "02/01/2021",
-  createdby: "System",
-  status: "Active"
-
-   },
-
-   {  
-  employeeid: 2,
-  first_name: 'Sampath',  
-  last_name: 'Mishra',
-  role: 'user',
-  email: "sampath.mishra@jeevanraksha.com",
-  phone: "9875698758",
-  createddate: "12/06/2021",
-  createdby: "System",
-  status: "Active"
-  
-  },
-
-  {  
-  employeeid: 3,
-  first_name: 'Sandeep',  
-  last_name: 'Chawla',
-  role: 'user',
-  email: "sandeep.chawla@jeevanraksha.com",
-  phone: "9875698758",
-  createddate: "12/06/2021",
-  createdby: "System",
-  status: "Inactive"
-    
-   },
-
-  {  
-  employeeid: 4,
-  first_name: 'Parvezsh',  
-  last_name: 'Ahamed',
-  role: 'Admin',
-  email: "parvezsh@jeevanraksha.com",
-  phone: "9875698758",
-  createddate: "12/06/2021",
-  createdby: "System",
-  status: "Active"
-      
-  },
-  {  
-  employeeid: 5,
-  first_name: 'Manmay',  
-  last_name: 'Prasad',
-  role: 'Admin',
-  email: "manmay@jeevanraksha.com",
-  phone: "9875698758",
-  createddate: "12/06/2021",
-  createdby: "System",
-  status: "Active"
-        
-  },
-  
-  ]  
+ 
 function ViewUsers(){
 
  const [data, setdata] = useState([])
@@ -168,7 +99,7 @@ function ViewUsers(){
         headers: {
           Authorization: `Bearer ${token}`
         }
-      }).then(res => res.json()).then(userdata=>setdata(userdata.body))
+      }).then(res => res.json()).then((userdata)=>{console.log(userdata); setdata(userdata.body)})
     }
     fetchAllEmployeesData()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps

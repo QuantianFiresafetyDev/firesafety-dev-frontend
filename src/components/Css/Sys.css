@@ -246,6 +246,12 @@ font-size: 16px;
     font-weight: bold; 
 }
 
+.related_systems_text{
+    font-size: 14px;
+    /* margin-left: 1rem; */
+    font-weight: bold; 
+}
+
 .audit_location_add_button{
     margin-right: auto;
     margin-right: 1.5rem;

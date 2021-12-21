@@ -214,6 +214,7 @@ export default function AuditCategoryLocation() {
   const [systemsSelected, setSystemsSelected] = useState([])
   const token = useSelector((state)=> state.user.token)
   const [draftStatus, setDraftStatus] = useState(true)
+  const [RelatedSystems, setRelatedSystems] = useState([])
 
   useEffect(() => {
     if(id){
@@ -233,24 +234,21 @@ export default function AuditCategoryLocation() {
 
   useEffect(() => {
     setCurrentLocation({...currentLocation})
-    console.log(locations)
+    console.log('inside useeffect for locations, currentTree: ', locations, currentTree)
 
     fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
       setCurrentAuditCat(res.body)
     })
+
+    fetch(
+      `${API_URL_BASE}/auditCategories/getRelatedSystems/${currentAuditCat?.name}/${itemClicked}`
+    )
+      .then((res) => res.json())
+      .then((res, key) => {
+        console.log('related systems: ', res)
+        setRelatedSystems(res.body.related_systems)});
     // eslint-disable-next-line
-  }, [locations, currentTree])
-
-  const onLocationClick = async (e , location) => {
-    setCurrentClickedPath(location.path)
-   await fetch(`${API_URL_BASE}/location/getLocationById/${location.id}`).then(res => res.json()).then(res => setCurrentLocation(res.body));
-  //  await fetch(`${API_URL_BASE}auditCategories/getQuestions/${location.id}`).then(res => res.json()).then(res => setList(res.body));
-   console.log(e.target)
-  }
-
-  const onSubLocationInputChange = (e) => {
-    setSubLocationInput(e.target.value)
-  }
+  }, [locations, currentTree, itemClicked])
 
   const onLocationInputChange = (e) => {
     console.log(e.target.value)
@@ -268,13 +266,7 @@ export default function AuditCategoryLocation() {
         key : `${currentItem.key}-${(currentItem.children && currentItem.children.length!==0) ? currentItem.children.length : 0}`, 
         
       }
-      // const newLocation = {
-      //   ...newLocationTemplate,
-      //   name : subLocationInput,
-      //   parentlocationId : currentLocation.id, 
-      //   isSubLocation : true,
-      //   path: currentClickedPath+`/${subLocationInput}`
-      // }
+
       console.log('newSubSystem: ', newLocation)
       fetch(`${API_URL_BASE}/location/createSubLocation`,{
         method : 'POST',
@@ -292,50 +284,48 @@ export default function AuditCategoryLocation() {
           errorToaster(res.message)
         }
       }).then(() => setLocations(locations))
-    //  const allSystem = [...systems];
-    //  const index = allSystem.findIndex(item => item.label === currentSystem.label);
-    //  const newSubSystem = allSystem[index].subsystem.concat([subSystemInput])
-    //  const system = {
-    //    ...allSystem[index],
-    //    subsystem : newSubSystem,
-    //  }
-    //  allSystem[index] = system;
-    //  setSystem(allSystem)
+
     setSubLocationInput('');
     }
   }
 
-  const linkToLocation = () => {
-    // let systems_chosen = [...value];
-    // let locationClicked = itemClicked;
-    // let existingRelatedLocation = [...currentAuditCat.related_locations]
-    // let toChange = existingRelatedLocation.filter(each => each.location === locationClicked)
-    let audCatCurrent = currentAuditCat
-    let updatedArray = audCatCurrent.related_systems.map((each) => {
-      if(each.location===itemClicked) each.systems = [...systemsSelected]
-      return each
+  const linkSystems = async () => {
+    if(currentAuditCat.isDraft){
+    await fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
+      setCurrentAuditCat(res.body)
+      console.log('itemClicked: ', itemClicked)
+      let updatedArray = res.body.related_systems.map((each) => {
+        console.log('each.location:', each.location)
+        console.log('systemsSelected: ', systemsSelected)
+        if(each.location===itemClicked) {each.systems = [...systemsSelected]}
+        return each
+      })
+      let link_payload = {
+        id: id,
+        related_systems: [...updatedArray]
+      }
+
+      console.log('link_payload: ', link_payload)
+
+      if(draftStatus){
+        fetch(`${API_URL_BASE}/auditCategories/linkSystems/${currentLocation.id}`,
+       {method : 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body : JSON.stringify(link_payload)
+       }).then(res => res.json()).then(data => { 
+         successToaster(data.message)
+         return data.body}).catch(err => errorToaster(err));
+      } else {
+        errorToaster('Saved Audit Category cannot be modified')
+      }
     })
-    audCatCurrent.related_systems = [...updatedArray]
-    console.log('linkSystems: ', audCatCurrent)
-    let link_payload = {
-      id: id,
-      related_systems: audCatCurrent.related_systems
-    }
-    //adds selected systems to systems key of related_locations field of the auditcategories
-    if(draftStatus){
-      fetch(`${API_URL_BASE}/auditCategories/linkSystems/${currentLocation.id}`,
-     {method : 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body : JSON.stringify(link_payload)
-     }).then(res => res.json()).then(data => { 
-       successToaster(data.message)
-       return data.body}).catch(err => errorToaster(err));
     } else {
-      alert('Saved Audit Category cannot be modified')
+      errorToaster('Saved Audit Category cannot be modified')
     }
+
   }
 
   const addHelpArticles = () => {
@@ -348,8 +338,9 @@ export default function AuditCategoryLocation() {
     // addLocation()
   }
 
-  const addNewLocationToTree = (newLocation) => {   //updates the tree with new location and calls importCurrentTree
-    console.log('currentItem: ', currentItem)
+  const addNewLocationToTree = (newLocation) => {
+    if(currentAuditCat.isDraft){
+      console.log('currentItem: ', currentItem)
     if(currentItem){
       let current = [...currentTree];
       console.log('current: ', current)
@@ -375,6 +366,10 @@ export default function AuditCategoryLocation() {
       console.log('current: ', current)
       importCurrentTree(current)
     }
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }  //updates the tree with new location and calls importCurrentTree
+    
   };
 
   const getChildren = (location) => {   //fetch children of a tree element
@@ -404,42 +399,65 @@ export default function AuditCategoryLocation() {
     }
   };
   
-  const addLocation = () => {   //adds updated location tree to server
-    const label = newLocationName
+  const addLocation = async () => {
+    if(currentAuditCat.isDraft){
+      const label = newLocationName
+    
     let newLocation = {
       title: newLocationName,
       key: `${currentItem?.key}-${(currentItem?.children && currentItem.children.length!==0) ? currentItem.children.length : 0}`,
-      // description: '', 
-      // systems: []
     }
-    let related_systems = [...currentAuditCat.related_systems]
-    related_systems.push({location: label, systems: []})
-    console.log('related_systems: ', related_systems)
     setNewLocation(newLocation)
     addNewLocationToTree(newLocation)
-    console.log('newLocationName: ', newLocationName)
-    if(label !== ''){
-      let newLocationPayload = {
-        id: id,
-        location_tree: currentTree,
-        related_systems: related_systems
+
+    await fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
+      setCurrentAuditCat(res.body)
+      let locationInDB = {
+        name : label,
+        description : '',
+        audit_category: res.body.name,
+        isSaved : false,
+        isDraft : true
       }
-      console.log('newLocationPayload: ', newLocationPayload)
-      setNewLocationName('')
-      if(draftStatus){
-        fetch(`${API_URL_BASE}/auditCategories/updateLocation`,{
-          method : 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body : JSON.stringify(newLocationPayload)
-        }).then(res => console.log('res.body: ',res.body)).then(() => setLocations(locations))
-      } else {
-        alert('Saved Audit Category cannot be modified')
+      fetch(`${API_URL_BASE}/auditCategories/createNewlocation`,{
+        method : 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body : JSON.stringify(locationInDB)
+      }).then(res => console.log(res.body))
+
+      let related_systems_existing = [...res.body.related_systems]
+      // console.log('related_systems_existing before push: ',related_systems_existing)
+      related_systems_existing.push({location: label, systems: []})
+
+      if(label !== ''){
+        let newLocationPayload = {
+          id: id,
+          location_tree: currentTree,
+          related_systems: related_systems_existing
+        }
+        console.log('newLocationPayload: ', newLocationPayload)
+        setNewLocationName('')
+        if(draftStatus){
+          fetch(`${API_URL_BASE}/auditCategories/updateLocation`,{
+            method : 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+              // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body : JSON.stringify(newLocationPayload)
+          }).then(response => console.log('res.body: ',response.body)).then(() => setLocations(locations))
+        } else {
+          alert('Saved Audit Category cannot be modified')
+        }
       }
-      
-    }
+    })
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }  //adds updated location tree to server
+    
   }
 
   const clickHandler = (selectedKeys, info) => {   //captures the user click at a location and sets as current item
@@ -455,6 +473,7 @@ export default function AuditCategoryLocation() {
       .filter(option => option.selected)
       .map(x => x.value);
       console.log("updatedOptions", updatedOptions);
+      setSystemsSelected(updatedOptions)
       setValue(updatedOptions);
       // setValue(Array.from(e.target.selectedOptions, (item) => item.value))
   }
@@ -536,32 +555,7 @@ export default function AuditCategoryLocation() {
               </div>
 
               <div className="audit_template_tree">
-                {/* <TreeAudit>
-                  <TreeView
-                    className={classes.root}
-                    defaultExpanded={["1"]}
-                    defaultCollapseIcon={<MinusSquare />}
-                    defaultExpandIcon={<PlusSquare />}
-                    defaultEndIcon={<CloseSquare />}
-                  >
-                <TreeAudit>
-                <StyledTreeItem nodeId="1" label="High Rise Apartments">
-                      { locations?.length && locations.map((location , index)=>{
-                        return (
-                          <StyledTreeItem nodeId={location.id} key={location.id} label={location.name} onClick={(e)=>onLocationClick(e, location)}>
-                              { currentLocation.sublocations?.length ? 
-                                 currentLocation.sublocations.map((sublocation, indx)=>
-                                 <StyledTreeItem nodeId={sublocation.id} key={indx} label={sublocation.path} onClick={(e)=>onLocationClick(e, sublocation)}/>) : ''
-                              }
-                          </StyledTreeItem>
-                        )
-                      })}
-                     </StyledTreeItem>
-                    <LocationInput value={newLocationName} onChange={onLocationInputChange} placeholder="Add Location"/>
-                     <AddLocationButton className="btn btn-md" color="secondary" type="submit" onClick={addLocation}> + Add Location</AddLocationButton>
-                </TreeAudit>
-                </TreeView>
-                </TreeAudit> */}
+                
                 <LocationTreeStructure
                   clicked={clickHandler}
                   newLocation={newLocation}
@@ -641,7 +635,19 @@ export default function AuditCategoryLocation() {
                 <div className="w-100 audit_template4"></div>
                 <div className="d-flex justify-content-between">
                   <div className="related_sys">
-                    <div className="audit_location">Related Systems</div>
+                    <div className="related_systems_text">Related Systems</div>
+                    {RelatedSystems?.map((each, key) => {
+                      return <div>{each}</div>
+                      })}
+                  </div>
+                  <div className="audit_location_add_button">
+                    <button
+                      className="au_add_btn"
+                      type="submit"
+                      onClick={linkSystems}
+                    >
+                      Link Systems
+                    </button>
                     <div>
                       <select
                         multiple={true}
@@ -656,21 +662,8 @@ export default function AuditCategoryLocation() {
                             </option>
                           );
                         })}
-                        {/* <option value="grapefruit">Grapefruit</option>
-                        <option value="lime">Lime</option>
-                        <option value="coconut">Coconut</option>
-                        <option value="mango">Mango</option> */}
                       </select>
                     </div>
-                  </div>
-                  <div className="audit_location_add_button">
-                    <button
-                      className="au_add_btn"
-                      type="submit"
-                      onClick={linkToLocation}
-                    >
-                      Link to Location
-                    </button>
                   </div>
                 </div>
 

@@ -200,7 +200,7 @@ function ViewAuditCategories() {
       <SecondaryNav />
       <div className="d-flex justify-content-between">
 
-        <h5 className="cat_audit"><Link to="/AddAuditCategories" className="audit_cat_back_button"><p className="fa fa-angle-left"> </p></Link> Audit Categories </h5>
+        <h5 className="cat_audit"><Link to="/viewAudits" className="audit_cat_back_button"><p className="fa fa-angle-left"> </p></Link> Audit Categories </h5>
         <div className="audit_cat_adding_sign"> <Link className='link_col' to="/AddAuditCategories"><PlaylistAddIcon /></Link></div>
 
       </div>

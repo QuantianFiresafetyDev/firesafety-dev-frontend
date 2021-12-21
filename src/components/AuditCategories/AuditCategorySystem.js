@@ -236,7 +236,8 @@ export default function AuditCategorySystem() {
   }
 
   const addNewSystemToTree = (newSystem) => {   //updates the tree with new system and calls importCurrentTree
-    console.log('currentItem: ', currentItem)
+    if(currentAuditCat.isDraft){
+      console.log('currentItem: ', currentItem)
     if(currentItem){
       let current = [...currentTree];
       console.log('current: ', current)
@@ -262,10 +263,15 @@ export default function AuditCategorySystem() {
       console.log('current: ', current)
       importCurrentTree(current)
     }
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }
+    
   };
 
   const addSystem = async () => {
-    const label = newSystemName
+    if(currentAuditCat.isDraft){
+      const label = newSystemName
     let newSystem = {
       title: newSystemName,
       key: `${currentItem?.key}-${(currentItem?.children && currentItem.children.length!==0) ? currentItem.children.length : 0}`,
@@ -312,47 +318,16 @@ export default function AuditCategorySystem() {
         body : JSON.stringify(newSystemPayload)
       }).then(res => setSystem(res.body))
     }
-  }
-
-  const onSubSystemInputChange = (e) => {
-    setSubSystemInput(e.target.value)
-  }
-  
-
-  const addSubSystem = () => {
-    console.log("add sub sytem",subSystemInput,currentSystem)
-    if(subSystemInput !== ''){
-      const newSystem = {
-        ...newSystemTemplate,
-        name : subSystemInput,
-        auditCategoryId : id,
-        parentsystemId : currentSystem.id, 
-        isSubSystem : true,
-        path: currentClickedPath+`/${subSystemInput}`
-      }
-      console.log('newSubSystem: ', newSystem)
-      fetch(`${API_URL_BASE}/auditCategories/createSubSystem`,{
-        method : 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body : JSON.stringify(newSystem)
-      }).then(res => res.json()).then(result => {
-        if(result.success){
-          successToaster(result.message)
-        } 
-        if(result.error){
-          errorToaster(result.message)
-        }
-      }).then(() => console.log('systems after addSubSystem: ', systems))
-     setSubSystemInput('');
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
     }
+    
   }
- 
+
 
   const addQuestion=()=>{
-    let payload;
+    if(currentAuditCat.isDraft){
+      let payload;
     if(selectedType==='Descriptive' || selectedType==='Yes/No'){
       let tempDescArr = []
       payload = {
@@ -395,6 +370,9 @@ export default function AuditCategorySystem() {
     })
 
     console.log("question add",data)
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }
   }
 
   // console.log('systems: ', systems)
@@ -407,7 +385,8 @@ export default function AuditCategorySystem() {
   }
 
   const editCurrentSystemDescription = async () => {
-    const payload = { description : description}
+    if(currentAuditCat.isDraft){
+      const payload = { description : description}
     const data = await fetch(`${API_URL_BASE}/auditCategories/editSystem/${itemClicked}/${currentAuditCat.name}`, 
      {method : 'PUT',
       headers: {
@@ -420,33 +399,38 @@ export default function AuditCategorySystem() {
        return data.body}).catch(err => errorToaster(err));
     //  setdescription('');
     console.log(data)
-    //  setcurrentSystem(data);
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }
   }
 
   const linkLocations = () => {
-    let audCatCurrent = currentAuditCat
-    let updatedArray = audCatCurrent.related_locations.map((each) => {
-      if(each.system===itemClicked) each.locations = [...locationsSelected]
-      return each
-    })
-    audCatCurrent.related_locations = [...updatedArray]
-    console.log('linkLocations: ', audCatCurrent)
-    let link_payload = {
-      id: id,
-      related_locations: audCatCurrent.related_locations
+    if(currentAuditCat.isDraft){
+      let audCatCurrent = currentAuditCat
+      let updatedArray = audCatCurrent.related_locations.map((each) => {
+        if(each.system===itemClicked) each.locations = [...locationsSelected]
+        return each
+      })
+      audCatCurrent.related_locations = [...updatedArray]
+      console.log('linkLocations: ', audCatCurrent)
+      let link_payload = {
+        id: id,
+        related_locations: audCatCurrent.related_locations
+      }
+      //adds selected locations to locations key of related_systems field of the auditcategories
+      fetch(`${API_URL_BASE}/auditCategories/linkLocations/${currentSystem.id}`, 
+       {method : 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body : JSON.stringify(link_payload)
+       }).then(res => res.json()).then(data => { 
+         successToaster(data.message)
+         return data.body}).catch(err => errorToaster(err));
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
     }
-    //adds selected locations to locations key of related_systems field of the auditcategories
-    fetch(`${API_URL_BASE}/auditCategories/linkLocations/${currentSystem.id}`, 
-     {method : 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body : JSON.stringify(link_payload)
-     }).then(res => res.json()).then(data => { 
-       successToaster(data.message)
-       return data.body}).catch(err => errorToaster(err));
-
   }
 
   const importCurrentTree = (tree) => {   //prop method to Treestructure to import current system tree to as prop to SystemTreeStructure component
@@ -654,7 +638,7 @@ export default function AuditCategorySystem() {
                 <div className="d-flex justify-content-between">
                   <div className="related_locations">
                     <div className="related_locations_text">Related Locations</div>
-                    {relatedLocations.map(each => <div>{each}</div>)}
+                    {relatedLocations?.map(each => <div>{each}</div>)}
                   </div>
                   <div className="audit_location_add_button">
                     <button className="au_add_btn" type="submit" onClick={linkLocations}>
