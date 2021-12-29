@@ -84,12 +84,13 @@ function AuditHistory(props) {
         //   'Authorization': `Bearer ${token}`
         // }
       }).then(res => res.json()).then((data, indx) => {
-        console.log(data.body)
+        console.log('Audit History Data: ', data.body)
         setAuditInspectionReportData(data.body)
         let historyRowData = data.body.map((each, idx) => {
           return {
             name: each.location,
             type: each.system,
+            // type: each.sub_system,
             // path: each.sub_system,
             inspection_date: props.inspection_date,
             // status: 'In Progress',
@@ -164,7 +165,7 @@ function AuditHistory(props) {
         <ReactTable
           data={answerHistoryData}
           columns={columns}
-          defaultPageSize={8}
+          defaultPageSize={50}
           showPagination={false}
           // getTdProps={(state, rowInfo, instance)}
           getTrProps={(
@@ -194,7 +195,8 @@ function AuditHistory(props) {
         </div>
         <div className='au_hist_view_insp'>
           <div style={{paddingTop: '10px', paddingBottom: '10px'}}><strong>{props.auditToBeDone.name}</strong></div>
-          <div style={{paddingTop: '5px', paddingBottom: '5px'}}><strong>Name:</strong> <span style={{paddingLeft: '10px'}}>{dataToDisplay ? dataToDisplay.name : 'None'}</span></div>
+          <div style={{paddingTop: '5px', paddingBottom: '5px'}}><strong>Location:</strong> <span style={{paddingLeft: '10px'}}>{dataToDisplay ? dataToDisplay.name : 'None'}</span></div>
+          <div style={{paddingTop: '5px', paddingBottom: '5px'}}><strong>System Audited</strong> <span style={{paddingLeft: '10px'}}>{dataToDisplay ? dataToDisplay.type : 'None'}</span></div>
           <div style={{paddingTop: '5px', paddingBottom: '5px'}}><strong>Inspection Date:</strong> <span style={{paddingLeft: '10px'}}>{dataToDisplay ? dataToDisplay.inspection_date : 'Not Inspected'}</span></div>
           <div style={{paddingTop: '5px', paddingBottom: '5px'}}><strong>Inspected By:</strong> <span style={{paddingLeft: '10px'}}>{dataToDisplay ? dataToDisplay.assignee : 'None'}</span></div>
           <div><div style={{paddingTop: '20px', paddingBottom: '20px'}}><strong>Inspection Report:</strong></div>

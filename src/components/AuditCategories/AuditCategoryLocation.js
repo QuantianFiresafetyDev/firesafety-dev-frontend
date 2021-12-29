@@ -338,6 +338,86 @@ export default function AuditCategoryLocation() {
     // addLocation()
   }
 
+  //recursion method try
+  const addToTree = (locationParam, treeparam) => {
+    if(currentAuditCat.isDraft){
+      if(currentItem){
+        let current = [...treeparam];
+        treeparam.forEach((each) => {
+          if(each.key === currentItem.key){
+            each.children.push(locationParam)
+          } else if(each.hasOwnProperty("children")){
+            current = [...each.children]
+            addToTree(locationParam, current)
+          }
+        })
+      }
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }
+    
+  }
+  
+  //iterative with 
+  const updateTree = (newLocation) => {
+    if(currentAuditCat.isDraft){
+      if(currentItem){
+        let current = [...currentTree];
+        current.forEach((each) => {
+          if(each.key === currentItem.key){
+            each.children.push(newLocation)
+          } else if(each.hasOwnProperty("children")){
+            let childrenToCheck = [...each.children]
+            childrenToCheck.forEach((eachChild) => {
+              if(eachChild.key === currentItem.key){
+                childrenToCheck.push(newLocation)
+              } else if(eachChild.hasOwnProperty("children")){
+                let grandChildrenToCheck = [...eachChild.children]
+                grandChildrenToCheck.forEach((eachGrandChild) => {
+                  if(eachGrandChild.key === currentItem.key){
+                    grandChildrenToCheck.push(newLocation)
+                  } else if(eachGrandChild.hasOwnProperty("children")){
+                    let greatGrandChildren = [...eachGrandChild.children]
+                    greatGrandChildren.forEach((eachGreatGrandChild) => {
+                      if(eachGreatGrandChild.key === currentItem.key){
+                        greatGrandChildren.push(newLocation)
+                      } else if(eachGreatGrandChild.hasOwnProperty("children")){
+                        let greatGrandChildren01 = [...eachGreatGrandChild.children]
+                        greatGrandChildren01.forEach((eachChild01) => {
+                        if(eachChild01.key === currentItem.key){
+                          greatGrandChildren01.push(newLocation)
+                      } else if(eachChild01.hasOwnProperty("children")){
+                        let greatGrandChildren02 = [...eachChild01.children]
+                        greatGrandChildren02.forEach((eachChild02) => {
+                          if(eachChild02.key === currentItem.key){
+                            greatGrandChildren02.push(newLocation)
+                          } else if(eachChild02.hasOwnProperty("children")){
+                            let greatGrandChildren03 = [...eachChild02.children]
+                            greatGrandChildren03.forEach((eachChild03) => {
+                              if(eachChild03.key === currentItem.key){
+                                greatGrandChildren03.push(newLocation)
+                              }
+                            })
+                          }
+                        })
+                      }
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+      }
+    })
+    importCurrentTree(current)
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }
+  }
+  }
+
+  //iterative working for depth till 3
   const addNewLocationToTree = (newLocation) => {
     if(currentAuditCat.isDraft){
       console.log('currentItem: ', currentItem)
@@ -371,6 +451,256 @@ export default function AuditCategoryLocation() {
     }  //updates the tree with new location and calls importCurrentTree
     
   };
+
+  // iterative modified to achieve beyond depth>3
+  const addLocationToArrayHandler = (newLocation) => {
+    console.log('inside addLocationToArrayHandler: ', newLocation)
+    if(currentAuditCat.isDraft){
+      console.log('currentItem: ', currentItem)
+    if(currentItem){
+      let found = false
+      let current = [...currentTree];
+      console.log('current: ', current)
+      if (current[0].key === currentItem.key) {
+        if (current[0].hasOwnProperty("children")) {
+          current[0].children.push(newLocation);
+          found = true
+        } else {
+          current[0].children = [];
+          current[0].children.push(newLocation);
+          found = true
+        }
+      } else if (current[0].hasOwnProperty("children")) {
+        current[0].children.forEach((element) => {
+          if(element.key === currentItem.key){
+            if(element.hasOwnProperty('children')){
+              element.children.push(newLocation)
+              found = true
+            } else {
+              element.children = [];
+              element.children.push(newLocation)
+              found = true
+            }
+          }
+        });
+        if(!found){
+          for (let i = 0; i < current[0].children.length; i++) {
+            if(current[0].children[i].key === currentItem.key){
+              if(current[0].children[i].hasOwnProperty("children")){
+                current[0].children[i].children.push(newLocation)
+              } else {
+                current[0].children[i].children = []
+                current[0].children[i].children.push(newLocation)
+              }
+              found = true
+            } else if(current[0].children[i].hasOwnProperty("children")){
+              for (let j = 0; j < current[0].children[i].children.length; j++) {
+                if(current[0].children[i].children[j].key === currentItem.key){
+                  if(current[0].children[i].children[j].hasOwnProperty("children")){
+                    current[0].children[i].children[j].push(newLocation)
+                  } else {
+                    current[0].children[i].children[j].children = []
+                    current[0].children[i].children[j].children.push(newLocation)
+                  }
+                  found = true
+                } else if(current[0].children[i].children[j].hasOwnProperty("children")){
+                  for (let k = 0; k < current[0].children[i].children[j]?.children?.length; k++) {
+                    if(current[0].children[i].children[j].children[k].key === currentItem.key){
+                      if(current[0].children[i].children[j].children[k].hasOwnProperty("children")){
+                        current[0].children[i].children[j].children[k].push(newLocation)
+                      } else {
+                        current[0].children[i].children[j].children[k].children = []
+                        current[0].children[i].children[j].children[k].children.push(newLocation)
+                      }
+                      found = true
+                    } else if(current[0].children[i].children[j].children[k].hasOwnProperty("children")){
+                      for (let l = 0; l < current[0].children[i].children[j].children[k]?.children?.length; l++) {
+                        if(current[0].children[i].children[j].children[k].children[l].key === currentItem.key){
+                          if(current[0].children[i].children[j].children[k].children[l].hasOwnProperty("children")){
+                            current[0].children[i].children[j].children[k].children[l].push(newLocation)
+                          } else {
+                            current[0].children[i].children[j].children[k].children[l].children = []
+                            current[0].children[i].children[j].children[k].children[l].children.push(newLocation)
+                          }
+                          found = true
+                        } else if(current[0].children[i].children[j].children[k].children[l].hasOwnProperty("children")){
+                          for (let m = 0; m < current[0].children[i].children[j].children[k].children[l]?.children?.length; m++) {
+                            if(current[0].children[i].children[j].children[k].children[l].children[m].key === currentItem.key){
+                              if(current[0].children[i].children[j].children[k].children[l].children[m].hasOwnProperty("children")){
+                                current[0].children[i].children[j].children[k].children[l].children[m].push(newLocation)
+                              } else {
+                                current[0].children[i].children[j].children[k].children[l].children[m].children = []
+                                current[0].children[i].children[j].children[k].children[l].children[m].children.push(newLocation)
+                              }
+                              found = true
+                            } else if(current[0].children[i].children[j].children[k].children[l].children[m].hasOwnProperty("children")){
+                              for (let n = 0; n < current[0].children[i].children[j].children[k].children[l].children[m]?.children?.length; n++){
+                                if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].key === currentItem.key){
+                                  if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].hasOwnProperty("children")){
+                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].push(newLocation)
+                                  } else {
+                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children = []
+                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children.push(newLocation)
+                                  }
+                                  found = true
+                                } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].hasOwnProperty("children")) {
+                                  for (let p = 0; p < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children?.length; p++){
+                                    if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].key === currentItem.key){
+                                      if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].hasOwnProperty("children")){
+                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].push(newLocation)
+                                      } else {
+                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children = []
+                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children.push(newLocation)
+                                      }
+                                      found = true
+                                    } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].hasOwnProperty("children")){
+                                      for (let q = 0; q < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p]?.children.length; q++){
+                                        if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].key === currentItem.key){
+                                          if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].hasOwnProperty("children")){
+                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].push(newLocation)
+                                          } else {
+                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children = []
+                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children.push(newLocation)
+                                          }
+                                          found = true
+                                        }  else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].hasOwnProperty("children")){
+                                          for (let r = 0; r < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children?.length; r++) {
+                                            if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].key === currentItem.key){
+                                              if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].hasOwnProperty("children")){
+                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].push(newLocation)
+                                              } else {
+                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children = []
+                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children.push(newLocation)
+                                              }
+                                              found = true
+                                            } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].hasOwnProperty("children")) {
+                                              for (let s = 0; s < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children?.length; s++){
+                                                if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].key === currentItem.key){
+                                                  if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].hasOwnProperty("children")){
+                                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].push(newLocation)
+                                                  } else {
+                                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children = []
+                                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children.push(newLocation)
+                                                  }
+                                                  found = true
+                                                } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].hasOwnProperty("children")){
+                                                  for (let t = 0; t < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children?.length; t++){
+                                                    if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].key === currentItem.key){
+                                                      if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].hasOwnProperty("children")){
+                                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].push(newLocation)
+                                                      } else {
+                                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children = []
+                                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children.push(newLocation)
+                                                      }
+                                                      found = true
+                                                    } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].hasOwnProperty("children")){
+                                                      for (let u = 0; u < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children?.length; u++){
+                                                        if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].key === currentItem.key){
+                                                          if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].hasOwnProperty("children")){
+                                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].push(newLocation)
+                                                          } else {
+                                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children = []
+                                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children.push(newLocation)
+                                                          }
+                                                          found = true
+                                                        } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].hasOwnProperty("children")){
+                                                          for (let v = 0; v < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children?.length; v++){
+                                                            if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].key === currentItem.key){
+                                                              if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].hasOwnProperty("children")){
+                                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].push(newLocation)
+                                                              } else {
+                                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children = []
+                                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children.push(newLocation)
+                                                              }
+                                                              found = true
+                                                            } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].hasOwnProperty("children")){
+                                                              for (let w = 0; w < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children?.length; w++){
+                                                                if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].key === currentItem.key){
+                                                                  if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].hasOwnProperty("children")){
+                                                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].push(newLocation)
+                                                                  } else {
+                                                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children = []
+                                                                    current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children.push(newLocation)
+                                                                  }
+                                                                  found = true
+                                                                } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].hasOwnProperty("children")){
+                                                                  for (let x = 0; x < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children[w].children?.length; x++){
+                                                                    if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].key === currentItem.key){
+                                                                      if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].hasOwnProperty("children")){
+                                                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].push(newLocation)
+                                                                      } else {
+                                                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children = []
+                                                                        current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children.push(newLocation)
+                                                                      }
+                                                                      found = true
+                                                                    } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].hasOwnProperty("children")){
+                                                                      for (let y = 0; y < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children[w].children[x].children?.length; y++) {
+                                                                        if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].key === currentItem.key){
+                                                                          if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].hasOwnProperty("children")){
+                                                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].push(newLocation)
+                                                                          } else {
+                                                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children = []
+                                                                            current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children.push(newLocation)
+                                                                          }
+                                                                          found = true
+                                                                        } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].hasOwnProperty("children")) {
+                                                                          for (let z = 0; z < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y]?.children?.length; x++){
+                                                                            if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].key === currentItem.key){
+                                                                              if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].hasOwnProperty("children")){
+                                                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].push(newLocation)
+                                                                              } else {
+                                                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].children = []
+                                                                                current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].children.push(newLocation)
+                                                                              }
+                                                                              found = true
+                                                                            }   
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                }   
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        } 
+                                      }
+  
+                                  } 
+  
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        console.log('current: ', current)
+        importCurrentTree(current)
+      }
+        }
+        
+    } else {
+      errorToaster('Saved Audit Category cannot be modified')
+    }  //updates the tree with new location and calls importCurrentTree
+    
+  };
+}
+  }
 
   const getChildren = (location) => {   //fetch children of a tree element
     console.log('currentItem: ', currentItem)
@@ -407,8 +737,11 @@ export default function AuditCategoryLocation() {
       title: newLocationName,
       key: `${currentItem?.key}-${(currentItem?.children && currentItem.children.length!==0) ? currentItem.children.length : 0}`,
     }
+
     setNewLocation(newLocation)
-    addNewLocationToTree(newLocation)
+    // addNewLocationToTree(newLocation)
+    addLocationToArrayHandler(newLocation)
+    // updateTree(newLocation)
 
     await fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
       setCurrentAuditCat(res.body)
@@ -655,7 +988,7 @@ export default function AuditCategoryLocation() {
                         onChange={systemSelectionHandler}
                       >
                         {currentAuditCat?.related_locations.map((each, key) => {
-                          console.log("all systems: ", each);
+                          // console.log("all systems: ", each);
                           return (
                             <option value={each.system.toString()}>
                               {each.system}

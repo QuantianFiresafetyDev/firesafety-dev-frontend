@@ -39,7 +39,7 @@ function AddAuditCategories() {
   // const [createddate, setCreatedDate] = useState("");
   // const [modifieddate, setModifiedDate] = useState("");
   const [createdby, setCreatedBy] = useState("");
-  const [draft, setDraft] = useState(false);
+  const [draft, setDraft] = useState(true);
   const data = useSelector(state => state);
 
   console.log("audit categories", data)
@@ -166,7 +166,7 @@ function AddAuditCategories() {
                       <input type="text" className="form-control" value={createdby} onChange={(e) => setCreatedBy(e.target.value)} name="createdby" id="createdby" placeholder="Created By" />
                     </div>
                   </div>
-                  <div className="row form-group">
+                  {/* <div className="row form-group">
                     <div className="col-md-12 mb-3 mb-md-0">
                       <label className="text-black" htmlFor="role">Draft</label> <br />
                       <select name="draft" required id="draft" value={draft?'Yes':'No'} onChange={(e) => setDraft(e.target.value === 'Yes' ? true : false)} className="form-control">
@@ -175,7 +175,7 @@ function AddAuditCategories() {
                         <option> No </option>
                       </select>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="row form-group">
                     <div className="col-md-12">
                       <button type="submit" className="btn btn-danger"> Add Audit Category </button>

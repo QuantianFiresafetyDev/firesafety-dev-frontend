@@ -107,7 +107,7 @@ function ViewAudits() {
         //   'Authorization': `Bearer ${token}`
         // }
       }).then(res => res.json()).then((data) => {
-        console.log(data.body)
+        console.log("List of All Audits: ", data.body)
         setdata(data.body)
       })
     }
