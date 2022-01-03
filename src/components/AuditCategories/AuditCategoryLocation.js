@@ -470,6 +470,7 @@ export default function AuditCategoryLocation() {
           current[0].children.push(newLocation);
           found = true
         }
+        importCurrentTree(current)
       } else if (current[0].hasOwnProperty("children")) {
         current[0].children.forEach((element) => {
           if(element.key === currentItem.key){
@@ -692,8 +693,8 @@ export default function AuditCategoryLocation() {
         console.log('current: ', current)
         importCurrentTree(current)
       }
-        }
-        
+    }
+    importCurrentTree(current)   
     } else {
       errorToaster('Saved Audit Category cannot be modified')
     }  //updates the tree with new location and calls importCurrentTree

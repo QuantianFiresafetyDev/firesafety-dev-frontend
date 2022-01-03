@@ -269,6 +269,257 @@ export default function AuditCategorySystem() {
     
   };
 
+    // iterative modified to achieve beyond depth>3
+    const addSystemToArrayHandler = (newSystem) => {
+      console.log('inside addLocationToArrayHandler: ', newSystem)
+      if(currentAuditCat.isDraft){
+        console.log('currentItem: ', currentItem)
+      if(currentItem){
+        let found = false
+        let current = [...currentTree];
+        console.log('current: ', current)
+        if (current[0].key === currentItem.key) {
+          if (current[0].hasOwnProperty("children")) {
+            current[0].children.push(newSystem);
+            found = true
+          } else {
+            current[0].children = [];
+            current[0].children.push(newSystem);
+            found = true
+          }
+          importCurrentTree(current)
+        } else if (current[0].hasOwnProperty("children")) {
+          current[0].children.forEach((element) => {
+            if(element.key === currentItem.key){
+              if(element.hasOwnProperty('children')){
+                element.children.push(newSystem)
+                found = true
+              } else {
+                element.children = [];
+                element.children.push(newSystem)
+                found = true
+              }
+            }
+          });
+          if(!found){
+            for (let i = 0; i < current[0].children.length; i++) {
+              if(current[0].children[i].key === currentItem.key){
+                if(current[0].children[i].hasOwnProperty("children")){
+                  current[0].children[i].children.push(newSystem)
+                } else {
+                  current[0].children[i].children = []
+                  current[0].children[i].children.push(newSystem)
+                }
+                found = true
+              } else if(current[0].children[i].hasOwnProperty("children")){
+                for (let j = 0; j < current[0].children[i].children.length; j++) {
+                  if(current[0].children[i].children[j].key === currentItem.key){
+                    if(current[0].children[i].children[j].hasOwnProperty("children")){
+                      current[0].children[i].children[j].push(newSystem)
+                    } else {
+                      current[0].children[i].children[j].children = []
+                      current[0].children[i].children[j].children.push(newSystem)
+                    }
+                    found = true
+                  } else if(current[0].children[i].children[j].hasOwnProperty("children")){
+                    for (let k = 0; k < current[0].children[i].children[j]?.children?.length; k++) {
+                      if(current[0].children[i].children[j].children[k].key === currentItem.key){
+                        if(current[0].children[i].children[j].children[k].hasOwnProperty("children")){
+                          current[0].children[i].children[j].children[k].push(newSystem)
+                        } else {
+                          current[0].children[i].children[j].children[k].children = []
+                          current[0].children[i].children[j].children[k].children.push(newSystem)
+                        }
+                        found = true
+                      } else if(current[0].children[i].children[j].children[k].hasOwnProperty("children")){
+                        for (let l = 0; l < current[0].children[i].children[j].children[k]?.children?.length; l++) {
+                          if(current[0].children[i].children[j].children[k].children[l].key === currentItem.key){
+                            if(current[0].children[i].children[j].children[k].children[l].hasOwnProperty("children")){
+                              current[0].children[i].children[j].children[k].children[l].push(newSystem)
+                            } else {
+                              current[0].children[i].children[j].children[k].children[l].children = []
+                              current[0].children[i].children[j].children[k].children[l].children.push(newSystem)
+                            }
+                            found = true
+                          } else if(current[0].children[i].children[j].children[k].children[l].hasOwnProperty("children")){
+                            for (let m = 0; m < current[0].children[i].children[j].children[k].children[l]?.children?.length; m++) {
+                              if(current[0].children[i].children[j].children[k].children[l].children[m].key === currentItem.key){
+                                if(current[0].children[i].children[j].children[k].children[l].children[m].hasOwnProperty("children")){
+                                  current[0].children[i].children[j].children[k].children[l].children[m].push(newSystem)
+                                } else {
+                                  current[0].children[i].children[j].children[k].children[l].children[m].children = []
+                                  current[0].children[i].children[j].children[k].children[l].children[m].children.push(newSystem)
+                                }
+                                found = true
+                              } else if(current[0].children[i].children[j].children[k].children[l].children[m].hasOwnProperty("children")){
+                                for (let n = 0; n < current[0].children[i].children[j].children[k].children[l].children[m]?.children?.length; n++){
+                                  if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].key === currentItem.key){
+                                    if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].hasOwnProperty("children")){
+                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].push(newSystem)
+                                    } else {
+                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children = []
+                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children.push(newSystem)
+                                    }
+                                    found = true
+                                  } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].hasOwnProperty("children")) {
+                                    for (let p = 0; p < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children?.length; p++){
+                                      if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].key === currentItem.key){
+                                        if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].hasOwnProperty("children")){
+                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].push(newSystem)
+                                        } else {
+                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children = []
+                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children.push(newSystem)
+                                        }
+                                        found = true
+                                      } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].hasOwnProperty("children")){
+                                        for (let q = 0; q < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p]?.children.length; q++){
+                                          if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].key === currentItem.key){
+                                            if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].hasOwnProperty("children")){
+                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].push(newSystem)
+                                            } else {
+                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children = []
+                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children.push(newSystem)
+                                            }
+                                            found = true
+                                          }  else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].hasOwnProperty("children")){
+                                            for (let r = 0; r < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children?.length; r++) {
+                                              if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].key === currentItem.key){
+                                                if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].hasOwnProperty("children")){
+                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].push(newSystem)
+                                                } else {
+                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children = []
+                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children.push(newSystem)
+                                                }
+                                                found = true
+                                              } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].hasOwnProperty("children")) {
+                                                for (let s = 0; s < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children?.length; s++){
+                                                  if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].key === currentItem.key){
+                                                    if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].hasOwnProperty("children")){
+                                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].push(newSystem)
+                                                    } else {
+                                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children = []
+                                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children.push(newSystem)
+                                                    }
+                                                    found = true
+                                                  } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].hasOwnProperty("children")){
+                                                    for (let t = 0; t < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children?.length; t++){
+                                                      if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].key === currentItem.key){
+                                                        if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].hasOwnProperty("children")){
+                                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].push(newSystem)
+                                                        } else {
+                                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children = []
+                                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children.push(newSystem)
+                                                        }
+                                                        found = true
+                                                      } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].hasOwnProperty("children")){
+                                                        for (let u = 0; u < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children?.length; u++){
+                                                          if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].key === currentItem.key){
+                                                            if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].hasOwnProperty("children")){
+                                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].push(newSystem)
+                                                            } else {
+                                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children = []
+                                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children.push(newSystem)
+                                                            }
+                                                            found = true
+                                                          } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].hasOwnProperty("children")){
+                                                            for (let v = 0; v < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children?.length; v++){
+                                                              if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].key === currentItem.key){
+                                                                if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].hasOwnProperty("children")){
+                                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].push(newSystem)
+                                                                } else {
+                                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children = []
+                                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children.push(newSystem)
+                                                                }
+                                                                found = true
+                                                              } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].hasOwnProperty("children")){
+                                                                for (let w = 0; w < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children?.length; w++){
+                                                                  if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].key === currentItem.key){
+                                                                    if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].hasOwnProperty("children")){
+                                                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].push(newSystem)
+                                                                    } else {
+                                                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children = []
+                                                                      current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children.push(newSystem)
+                                                                    }
+                                                                    found = true
+                                                                  } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].hasOwnProperty("children")){
+                                                                    for (let x = 0; x < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children[w].children?.length; x++){
+                                                                      if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].key === currentItem.key){
+                                                                        if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].hasOwnProperty("children")){
+                                                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].push(newSystem)
+                                                                        } else {
+                                                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children = []
+                                                                          current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children.push(newSystem)
+                                                                        }
+                                                                        found = true
+                                                                      } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].hasOwnProperty("children")){
+                                                                        for (let y = 0; y < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children[w].children[x].children?.length; y++) {
+                                                                          if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].key === currentItem.key){
+                                                                            if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].hasOwnProperty("children")){
+                                                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].push(newSystem)
+                                                                            } else {
+                                                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children = []
+                                                                              current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children.push(newSystem)
+                                                                            }
+                                                                            found = true
+                                                                          } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].hasOwnProperty("children")) {
+                                                                            for (let z = 0; z < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y]?.children?.length; x++){
+                                                                              if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].key === currentItem.key){
+                                                                                if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].hasOwnProperty("children")){
+                                                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].push(newSystem)
+                                                                                } else {
+                                                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].children = []
+                                                                                  current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].children.push(newSystem)
+                                                                                }
+                                                                                found = true
+                                                                              }   
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                  }   
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          } 
+                                        }
+    
+                                    } 
+    
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                          
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          console.log('current: ', current)
+          importCurrentTree(current)
+        }
+      }
+      importCurrentTree(current)   
+      } else {
+        errorToaster('Saved Audit Category cannot be modified')
+      }  //updates the tree with new location and calls importCurrentTree
+      
+    };
+  }
+    }
+
   const addSystem = async () => {
     if(currentAuditCat.isDraft){
       const label = newSystemName
@@ -299,7 +550,8 @@ export default function AuditCategorySystem() {
     console.log('related_locations: ', related_locations)
 
     setNewSystem(newSystem)
-    addNewSystemToTree(newSystem)
+    // addNewSystemToTree(newSystem)
+    addSystemToArrayHandler(newSystem)
     console.log('newSystemName: ', newSystemName)
     if(label !== ''){
       let newSystemPayload = {
