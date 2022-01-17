@@ -1,6 +1,6 @@
 import { React, useState } from 'react';
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import styled from 'styled-components';
 import '../Css/Sys.css';
 import SecondaryNav from '../Layouts/SecondaryNav';
@@ -36,6 +36,7 @@ function AddAuditCategories() {
 
   const [auditcatname, setAuditCatName] = useState("");
   const [supercategory, setSuperCategory] = useState("");
+  const history = useHistory()
   // const [createddate, setCreatedDate] = useState("");
   // const [modifieddate, setModifiedDate] = useState("");
   const [createdby, setCreatedBy] = useState("");
@@ -45,7 +46,7 @@ function AddAuditCategories() {
   console.log("audit categories", data)
 
   // const dispatch = useDispatch();
-  // const history = useHistory()
+  
   const token = useSelector((state)=> state.user.token)
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,7 +73,7 @@ function AddAuditCategories() {
     .then((result) => {
       console.log("DEBUG",result)
       if(result.success){
-        // history.push('/viewAudits')
+        history.push('/ViewAuditCategories')
         console.log(successToaster)
         successToaster(result.message)
         // dispatch(setLoginData(result.body))  

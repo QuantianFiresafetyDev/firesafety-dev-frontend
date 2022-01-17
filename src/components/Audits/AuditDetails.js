@@ -354,10 +354,11 @@ function AuditDetails(props) {
                           {isEdit ? (
                             <select
                               onChange={(e) => setAuditCategory(e.target.value)}
-                            >
+                            ><option>None</option>
                               {auditCategories.map((item) => (
                                 <option>{item.name}</option>
-                              ))}
+                              ))
+                              }
                               ){" "}
                             </select>
                           ) : (
