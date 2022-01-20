@@ -56,7 +56,9 @@ function AddAuditCategories() {
       super_category: supercategory,
       isDraft: draft,
       system_tree: [],
-      location_tree: []
+      location_tree: [],
+      systemKeys: ['1'],
+      locationKeys: ['1']
     }
     console.log("DEBUG", payload)
 

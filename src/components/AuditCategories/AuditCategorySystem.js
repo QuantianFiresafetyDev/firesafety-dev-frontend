@@ -177,10 +177,11 @@ export default function AuditCategorySystem() {
   const [value, setValue] = useState([])
   const [relatedLocations, setRelatedLocations] = useState([])
   const [draftStatus, setDraftStatus] = useState(true)
+  const [systemKeys, setSystemKeys] = useState([])
 
 
   useEffect(() => {
-    console.log(id)
+    // console.log(id)
     if(id){
       fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
         if(res.body.system_tree.length>0){
@@ -195,43 +196,65 @@ export default function AuditCategorySystem() {
     }).then(res => res.json()).then(data => setArticles(data.body))
     if(id){
       fetch(`${API_URL_BASE}/auditCategories/getQuestions/${id}`).then(res => res.json()).then((res) => {
-        console.log('question list in useeffect: ', res.body);
+        // console.log('question list in useeffect: ', res.body);
         let questionList = res.body.filter((each) => each.audiCat === currentAuditCat.name)
         setList(questionList)})
     }
+    if(id){
+      axios.get(`${API_URL_BASE}/auditCategories/getSystemKeys/${id}`).then((res) => {
+        // console.log('getSystemKeys in useEffect: ', res.data.body)
+        setSystemKeys(res.data.body.systemKeys)
+      })
+    }
+
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   
 
 
   useEffect(() => {
     setcurrentSystem({...currentSystem})
+    
     fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
-      console.log('currentAudCat in useEffect: ', res.body)
+      // console.log('currentAudCat in useEffect: ', res.body)
       setCurrentAuditCat(res.body)
     })
-    console.log('itemClicked: ', itemClicked)
-    fetch(`${API_URL_BASE}/auditCategories/fetchSystem/${itemClicked}`).then(res => res.json()).then((res) => {
-      console.log('system fetched in useEffect: ', res.body)
-      console.log('currentSystemDescription: ', res.body[0]?.description)
-    // setFetchedSystem(res.body)
-    setCurrentSystemDescription(res.body[0]?.description)
-    })
+    // console.log('itemClicked: ', itemClicked)
+    if(itemClicked !== ''){
+      fetch(`${API_URL_BASE}/auditCategories/fetchSystem/${itemClicked}`).then(res => res.json()).then((res) => {
+        // console.log('system fetched in useEffect: ', res.body)
+        // console.log('currentSystemDescription: ', res.body[0]?.description)
+      // setFetchedSystem(res.body)
+      setCurrentSystemDescription(res.body[0]?.description)
+      })
+
+      // console.log('itemClicked in useEffect: ', itemClicked)
     fetch(
       `${API_URL_BASE}/auditCategories/getQuestionsForSystem/${itemClicked}`
     )
       .then((res) => res.json())
       .then((res, key) => {
-        console.log(res)
-        console.log('question list in useeffect: ', res.body)
+        // console.log(res)
+        // console.log('question list in useeffect: ', res.body)
         let questionsRelevant = res.body.filter((each) => each.auditCat === currentAuditCat.name)
         setList(questionsRelevant)});
-    fetch(
-      `${API_URL_BASE}/auditCategories/getRelatedLocations/${currentAuditCat?.name}/${itemClicked}`
-    )
+
+        fetch(
+          `${API_URL_BASE}/auditCategories/getRelatedLocations/${id}/${itemClicked}`
+        )
+          .then((res) => res.json())
+          .then((res, key) => {
+            // console.log('related locations: ', res, key)
+            setRelatedLocations(res.body.related_locations)});
+
+    }
+
+    fetch(`${API_URL_BASE}/auditCategories/getSystemKeys/${id}`)
       .then((res) => res.json())
-      .then((res, key) => {
-        console.log('related locations: ', res)
-        setRelatedLocations(res.body.related_locations)});
+      .then((res) => {
+        // console.log('getSystemKeys in useEffect below: ', res)
+        // console.log('system key list in useeffect: ', res.body.systemKeys)
+        setSystemKeys(res.body.systemKeys)
+        });
     // eslint-disable-next-line
   }, [systems, currentTree, itemClicked])
 
@@ -240,49 +263,15 @@ export default function AuditCategorySystem() {
     setNewSystemName(systemLabel);
   }
 
-  const addNewSystemToTree = (newSystem) => {   //updates the tree with new system and calls importCurrentTree
-    if(currentAuditCat.isDraft){
-      console.log('currentItem: ', currentItem)
-    if(currentItem){
-      let current = [...currentTree];
-      console.log('current: ', current)
-      if (current[0].key === currentItem.key) {
-        if (current[0].hasOwnProperty("children")) {
-          current[0].children.push(newSystem);
-        } else {
-          current[0].children = [];
-          current[0].children.push(newSystem);
-        }
-      } else if (current[0].hasOwnProperty("children")) {
-        current[0].children.forEach((element) => {
-          if(element.key === currentItem.key){
-            if(element.hasOwnProperty('children')){
-              element.children.push(newSystem)
-            } else {
-              element.children = [];
-              element.children.push(newSystem)
-            }
-          }
-        });
-      }
-      console.log('current: ', current)
-      importCurrentTree(current)
-    }
-    } else {
-      errorToaster('Saved Audit Category cannot be modified')
-    }
-    
-  };
-
     // iterative modified to achieve beyond depth>3
     const addSystemToArrayHandler = (newSystem) => {
-      console.log('inside addLocationToArrayHandler: ', newSystem)
+      // console.log('inside addLocationToArrayHandler: ', newSystem)
       if(currentAuditCat.isDraft){
-        console.log('currentItem: ', currentItem)
+        // console.log('currentItem: ', currentItem)
       if(currentItem){
         let found = false
         let current = [...currentTree];
-        console.log('current: ', current)
+        // console.log('current: ', current)
         if (current[0].key === currentItem.key) {
           if (current[0].hasOwnProperty("children")) {
             current[0].children.push(newSystem);
@@ -294,17 +283,6 @@ export default function AuditCategorySystem() {
           }
           importCurrentTree(current)
         } else if (current[0].hasOwnProperty("children")) {
-          current[0].children.forEach((element) => {
-            if(element.key === currentItem.key){
-              if(element.hasOwnProperty('children')){
-                element.children.push(newSystem)
-                found = true
-              } else {
-                element.children = [];
-                element.children.push(newSystem)
-                found = true
-              }
-            } else {
               for (let i = 0; i < current[0].children.length; i++) {
                 if(current[0].children[i].key === currentItem.key){
                   if(current[0].children[i].hasOwnProperty("children")){
@@ -315,24 +293,26 @@ export default function AuditCategorySystem() {
                     current[0].children[i].children.push(newSystem)
                     found = true
                   }
+                  importCurrentTree(current)
                 } else if(current[0].children[i].hasOwnProperty("children")){
                   
                   for (let j = 0; j < current[0].children[i].children.length; j++) {
                     if(current[0].children[i].children[j].key === currentItem.key){
                       if(current[0].children[i].children[j].hasOwnProperty("children")){
-                        console.log('i=',i,' j=', j, current[0].children[i].children[j])
-                        current[0].children[i].children[j].push(newSystem)
+                        // console.log('i=',i,' j=', j, current[0].children[i].children[j])
+                        current[0].children[i].children[j].children.push(newSystem)
                         found = true
                       } else {
                         current[0].children[i].children[j].children = []
                         current[0].children[i].children[j].children.push(newSystem)
                         found = true
                       }
+                      importCurrentTree(current)
                     } else if(current[0].children[i].children[j].hasOwnProperty("children")){
                       for (let k = 0; k < current[0].children[i].children[j]?.children?.length; k++) {
                         if(current[0].children[i].children[j].children[k].key === currentItem.key){
                           if(current[0].children[i].children[j].children[k].hasOwnProperty("children")){
-                            console.log('i=',i,' j=', j, ' k=', k, current[0].children[i].children[j].children[k])
+                            // console.log('i=',i,' j=', j, ' k=', k, current[0].children[i].children[j].children[k])
                             current[0].children[i].children[j].children[k].children.push(newSystem)
                             found = true
                           } else {
@@ -340,16 +320,18 @@ export default function AuditCategorySystem() {
                             current[0].children[i].children[j].children[k].children.push(newSystem)
                             found = true
                           }
+                          importCurrentTree(current)
                         } else if(current[0].children[i].children[j].children[k].hasOwnProperty("children")){
                           for (let l = 0; l < current[0].children[i].children[j].children[k]?.children?.length; l++) {
                             if(current[0].children[i].children[j].children[k].children[l].key === currentItem.key){
                               if(current[0].children[i].children[j].children[k].children[l].hasOwnProperty("children")){
                                 current[0].children[i].children[j].children[k].children[l].children.push(newSystem)
-                                found = true
+                                
                               } else {
                                 current[0].children[i].children[j].children[k].children[l].children = []
                                 current[0].children[i].children[j].children[k].children[l].children.push(newSystem)
                               }
+                              importCurrentTree(current)
                             } else if(current[0].children[i].children[j].children[k].children[l].hasOwnProperty("children")){
                               for (let m = 0; m < current[0].children[i].children[j].children[k].children[l]?.children?.length; m++) {
                                 if(current[0].children[i].children[j].children[k].children[l].children[m].key === currentItem.key){
@@ -359,7 +341,7 @@ export default function AuditCategorySystem() {
                                     current[0].children[i].children[j].children[k].children[l].children[m].children = []
                                     current[0].children[i].children[j].children[k].children[l].children[m].children.push(newSystem)
                                   }
-                                  found = true
+                                  importCurrentTree(current)
                                 } else if(current[0].children[i].children[j].children[k].children[l].children[m].hasOwnProperty("children")){
                                   for (let n = 0; n < current[0].children[i].children[j].children[k].children[l].children[m]?.children?.length; n++){
                                     if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].key === currentItem.key){
@@ -369,7 +351,7 @@ export default function AuditCategorySystem() {
                                         current[0].children[i].children[j].children[k].children[l].children[m].children[n].children = []
                                         current[0].children[i].children[j].children[k].children[l].children[m].children[n].children.push(newSystem)
                                       }
-                                      found = true
+                                      importCurrentTree(current)
                                     } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].hasOwnProperty("children")) {
                                       for (let p = 0; p < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children?.length; p++){
                                         if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].key === currentItem.key){
@@ -379,7 +361,7 @@ export default function AuditCategorySystem() {
                                             current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children = []
                                             current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children.push(newSystem)
                                           }
-                                          found = true
+                                          importCurrentTree(current)
                                         } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].hasOwnProperty("children")){
                                           for (let q = 0; q < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p]?.children.length; q++){
                                             if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].key === currentItem.key){
@@ -389,7 +371,7 @@ export default function AuditCategorySystem() {
                                                 current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children = []
                                                 current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children.push(newSystem)
                                               }
-                                              found = true
+                                              importCurrentTree(current)
                                             }  else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].hasOwnProperty("children")){
                                               for (let r = 0; r < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children?.length; r++) {
                                                 if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].key === currentItem.key){
@@ -399,7 +381,7 @@ export default function AuditCategorySystem() {
                                                     current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children = []
                                                     current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children.push(newSystem)
                                                   }
-                                                  found = true
+                                                  importCurrentTree(current)
                                                 } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].hasOwnProperty("children")) {
                                                   for (let s = 0; s < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children?.length; s++){
                                                     if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].key === currentItem.key){
@@ -409,7 +391,7 @@ export default function AuditCategorySystem() {
                                                         current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children = []
                                                         current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children.push(newSystem)
                                                       }
-                                                      found = true
+                                                      importCurrentTree(current)
                                                     } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].hasOwnProperty("children")){
                                                       for (let t = 0; t < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children?.length; t++){
                                                         if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].key === currentItem.key){
@@ -419,7 +401,7 @@ export default function AuditCategorySystem() {
                                                             current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children = []
                                                             current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children.push(newSystem)
                                                           }
-                                                          found = true
+                                                          importCurrentTree(current)
                                                         } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].hasOwnProperty("children")){
                                                           for (let u = 0; u < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children?.length; u++){
                                                             if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].key === currentItem.key){
@@ -429,7 +411,7 @@ export default function AuditCategorySystem() {
                                                                 current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children = []
                                                                 current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children.push(newSystem)
                                                               }
-                                                              found = true
+                                                              importCurrentTree(current)
                                                             } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].hasOwnProperty("children")){
                                                               for (let v = 0; v < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children?.length; v++){
                                                                 if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].key === currentItem.key){
@@ -439,7 +421,7 @@ export default function AuditCategorySystem() {
                                                                     current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children = []
                                                                     current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children.push(newSystem)
                                                                   }
-                                                                  found = true
+                                                                  importCurrentTree(current)
                                                                 } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].hasOwnProperty("children")){
                                                                   for (let w = 0; w < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children?.length; w++){
                                                                     if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].key === currentItem.key){
@@ -449,7 +431,7 @@ export default function AuditCategorySystem() {
                                                                         current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children = []
                                                                         current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children.push(newSystem)
                                                                       }
-                                                                      found = true
+                                                                      importCurrentTree(current)
                                                                     } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].hasOwnProperty("children")){
                                                                       for (let x = 0; x < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children[w].children?.length; x++){
                                                                         if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].key === currentItem.key){
@@ -459,7 +441,7 @@ export default function AuditCategorySystem() {
                                                                             current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children = []
                                                                             current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children.push(newSystem)
                                                                           }
-                                                                          found = true
+                                                                          importCurrentTree(current)
                                                                         } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].hasOwnProperty("children")){
                                                                           for (let y = 0; y < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[s].children[t].children[u].children[v].children[w].children[x].children?.length; y++) {
                                                                             if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].key === currentItem.key){
@@ -469,7 +451,7 @@ export default function AuditCategorySystem() {
                                                                                 current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children = []
                                                                                 current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children.push(newSystem)
                                                                               }
-                                                                              found = true
+                                                                              importCurrentTree(current)
                                                                             } else if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].hasOwnProperty("children")) {
                                                                               for (let z = 0; z < current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y]?.children?.length; x++){
                                                                                 if(current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].key === currentItem.key){
@@ -479,7 +461,7 @@ export default function AuditCategorySystem() {
                                                                                     current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].children = []
                                                                                     current[0].children[i].children[j].children[k].children[l].children[m].children[n].children[p].children[q].children[r].children[s].children[t].children[u].children[v].children[w].children[x].children[y].children[z].children.push(newSystem)
                                                                                   }
-                                                                                  found = true
+                                                                                  importCurrentTree(current)
                                                                                 }   
                                                                               }
                                                                             }
@@ -516,11 +498,11 @@ export default function AuditCategorySystem() {
                 }
               }
             }
-            console.log('current: ', current)
-            importCurrentTree(current)
+            // console.log('current: ', current)
+            // importCurrentTree(current)
           }
-            }
-          });
+          //   }
+          // });
       importCurrentTree(current)   
       } else {
         errorToaster('Saved Audit Category cannot be modified')
@@ -531,61 +513,88 @@ export default function AuditCategorySystem() {
     }
     
   const addSystem = async () => {
-    if(currentAuditCat.isDraft){
-      const label = newSystemName
-    let newSystem = {
-      title: newSystemName,
-      key: `${currentItem?.key}-${(currentItem?.children && currentItem.children.length!==0) ? currentItem.children.length : 0}`,
-    }
-    if(newSystem.title.length >0 && newSystem.title[0] !== " "){
-      let systemInDB = {
-        name : label,
-        description : '',
-        audit_category: currentAuditCat.name,
-        isSaved : false,
-        isDraft : true
-      }
-      console.log(systemInDB)
-      let systemCretionResult = await fetch(`${API_URL_BASE}/auditCategories/createNewSystem`,{
-        method : 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body : JSON.stringify(systemInDB)
-      }).then(res => console.log(res.body))
-      console.log('systemCretionResult: ', systemCretionResult)
-      let related_locations = [...currentAuditCat.related_locations]
-      console.log('related_locations: ', related_locations)
-      related_locations.push({system: label, locations: []})
-      console.log('related_locations: ', related_locations)
-  
-      setNewSystem(newSystem)
-      // addNewSystemToTree(newSystem)
-      addSystemToArrayHandler(newSystem)
-      console.log('newSystemName: ', newSystemName)
-      if(label !== ''){
-        let newSystemPayload = {
-          id: id,
-          system_tree: currentTree,
-          related_locations: related_locations
+    if (currentAuditCat.isDraft) {
+      const label = newSystemName;
+      let newSystem = {
+        title: newSystemName,
+        key: `${currentItem?.key}-${
+          currentItem.children && currentItem.children?.length !== 0
+            ? currentItem.children.length
+            : 0
+        }`,
+      };
+      // console.log("response from getSystemKeys as updated in useEffect: ", systemKeys);
+      // setSystemKeys(systemKeys);
+      if (!(systemKeys.includes(newSystem.key))) {
+        // console.log("currentTree in addSystem: ", currentTree);
+        // console.log("currentItem in addSystem: ", currentItem);
+        // console.log("newSystem in AddSystem: ", newSystem, "currentItem.children.length=", currentItem?.children?.length);
+        let systemKeyArray = [...systemKeys];
+        systemKeyArray.push(newSystem.key);
+        setSystemKeys(systemKeyArray);
+        let systemKeyPayload = {
+          systemKeys: [...systemKeyArray],
+        };
+        // console.log('systemKeyPayload: ', systemKeyPayload)
+        await axios.post(`${API_URL_BASE}/auditCategories/postSystemKeys/${id}`, systemKeyPayload).then((res) => {
+          // console.log("postSystemKey response: ", res);
+        }).catch((err) => console.log('error in POST: ', err));
+        if (newSystem.title.length > 0 && newSystem.title[0] !== " ") {
+          let systemInDB = {
+            name: label,
+            description: "",
+            audit_category: currentAuditCat.name,
+            isSaved: false,
+            isDraft: true,
+          };
+          // console.log(systemInDB);
+          let systemCreationResult = fetch(
+            `${API_URL_BASE}/auditCategories/createNewSystem`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: JSON.stringify(systemInDB),
+            }
+          ).then((res) => console.log(res.body));
+          // console.log("systemCreationResult: ", systemCreationResult);
+          let related_locations = [...currentAuditCat.related_locations];
+          // console.log("related_locations: ", related_locations);
+          related_locations.push({ system: label, locations: [] });
+          // console.log("related_locations: ", related_locations);
+
+          setNewSystem(newSystem);
+          // addNewSystemToTree(newSystem)
+          addSystemToArrayHandler(newSystem);
+          // console.log("newSystemName: ", newSystemName);
+          if (label !== "") {
+            let newSystemPayload = {
+              id: id,
+              system_tree: currentTree,
+              related_locations: related_locations,
+            };
+            // console.log("newSystemPayload: ", newSystemPayload);
+            setNewSystemName("");
+            fetch(`${API_URL_BASE}/auditCategories/updateSystem`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: JSON.stringify(newSystemPayload),
+            }).then((res) => setSystem(res.body));
+          }
+        } else {
+          errorToaster("Please enter a system name");
         }
-        console.log('newSystemPayload: ', newSystemPayload)
-        setNewSystemName('')
-        fetch(`${API_URL_BASE}/auditCategories/updateSystem`,{
-          method : 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body : JSON.stringify(newSystemPayload)
-        }).then(res => setSystem(res.body))
+      } else {
+        errorToaster("User to Select System before Adding System");
       }
+
     } else {
-      errorToaster('Please enter a system name')
-    }
-    } else {
-      errorToaster('Saved Audit Category cannot be modified')
+      errorToaster("Saved Audit Category cannot be modified");
     }
     
   }
@@ -611,7 +620,7 @@ export default function AuditCategorySystem() {
         auditCat: currentAuditCat.name
       }
     }
-    console.log(payload)
+    // console.log(payload)
     if((payload.questionType==="Single Select" || payload.questionType==="Multi Select")){
       if((payload.questionType !== '') && (!(payload.description.includes("  ")) && (payload.description[0] !== " ") && (payload.description.length !== 0) && (payload.multiSingleOptions.length>0))){
         const data = fetch(`${API_URL_BASE}/auditCategories/addSystemQuestion`,{
@@ -626,7 +635,7 @@ export default function AuditCategorySystem() {
             successToaster(result.message)
             let addedQuestions = result.body.filter((each) => each.auditCat === currentAuditCat.name)
              const newQuestionList = [addedQuestions,...list]
-             console.log('question list in addQuestion: ', newQuestionList)
+            //  console.log('question list in addQuestion: ', newQuestionList)
              setList(newQuestionList);
              setSelectedType('Select Question Type')
              setAdminanswer([])
@@ -637,7 +646,7 @@ export default function AuditCategorySystem() {
           }
           return result.body
         })
-        console.log("question add",data)
+        // console.log("question add",data)
       } else {
         errorToaster("Question/Question Type Cannot be Empty")
       }
@@ -665,7 +674,7 @@ export default function AuditCategorySystem() {
           }
           return result.body
         })
-        console.log("question add",data)
+        // console.log("question add",data)
       
     }
     } else {
@@ -687,7 +696,7 @@ export default function AuditCategorySystem() {
        successToaster(data.message)
        return data.body}).catch(err => errorToaster(err));
     //  setdescription('');
-    console.log(data)
+    // console.log(data)
     } else {
       errorToaster('Saved Audit Category cannot be modified')
     }
@@ -701,7 +710,7 @@ export default function AuditCategorySystem() {
         return each
       })
       audCatCurrent.related_locations = [...updatedArray]
-      console.log('linkLocations: ', audCatCurrent)
+      // console.log('linkLocations: ', audCatCurrent)
       let link_payload = {
         id: id,
         related_locations: audCatCurrent.related_locations
@@ -723,50 +732,24 @@ export default function AuditCategorySystem() {
   }
 
   const importCurrentTree = (tree) => {   //prop method to Treestructure to import current system tree to as prop to SystemTreeStructure component
-    console.log('inside importCurrentTree: ', tree)
+    // console.log('inside importCurrentTree: ', tree)
     setCurrentTree(tree)
   }
 
   const clickHandler = (selectedKeys, info) => {   //captures the user click at a system and sets as current item
-    console.log('Key Selected: ', selectedKeys)
-    console.log('Item Selected: ', info)
+    // console.log('Key Selected: ', selectedKeys)
+    // console.log('Item Selected: ', info)
     setItemClicked(info.node.title)
     setCurrentItem(info.node)
   }
 
-  const getChildren = (system) => {   //fetch children of a tree element
-    console.log('currentItem: ', currentItem)
-    if(currentItem){
-      let current = [...currentTree];
-      console.log('current: ', current)
-      if (current[0].key === currentItem.key) {
-        if (current[0].hasOwnProperty("children")) {
-          return current[0].children
-        } else {
-          return null;
-        }
-      } else if (current[0].hasOwnProperty("children")) {
-        current[0].children.forEach((element) => {
-          if(element.key === currentItem.key){
-            if(element.hasOwnProperty('children')){
-              return element.children
-            } else {
-              return null;
-            }
-          }
-        });
-      }
-      // console.log('current: ', current)
-      // importCurrentTree(current)
-    }
-  };
 
   const locationSelectionHandler = (e) => {
-    console.log(e.target.options)
+    // console.log(e.target.options)
     let updatedOptions = [...e.target.options]
       .filter(option => option.selected)
       .map(x => x.value);
-      console.log("updatedOptions", updatedOptions);
+      // console.log("updatedOptions", updatedOptions);
       setLocationsSelected(updatedOptions);
       setValue(updatedOptions);
   }
@@ -809,9 +792,9 @@ export default function AuditCategorySystem() {
       aud_cat: currentAuditCat.name,
       draft_status: false
     }
-    console.log('Save Button Clicked')
+    // console.log('Save Button Clicked')
     axios.put(`${API_URL_BASE}/auditCategories/updatedraftstatus`, savePayload).then(response => {
-      console.log('draft status: ', response.data.body);
+      // console.log('draft status: ', response.data.body);
       setDraftStatus(false)
       successToaster(response.data.message)
     })

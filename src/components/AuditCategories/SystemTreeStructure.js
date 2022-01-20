@@ -32,7 +32,7 @@ function SystemTreeStructure ({clicked, treeName, newLocation, currentItem, impo
         fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
           // setCurrenttree([{title: `${res.body.name}`, key: `${1}`, description: '', locations: []}])
           setCurrenttree([{title: `${res.body.name}`, key: `${1}`}])
-          console.log(res.body)
+          // console.log(res.body)
         })
       }
       console.log('inside useEffect', currentTree)      

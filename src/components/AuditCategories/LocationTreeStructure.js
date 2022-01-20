@@ -21,7 +21,7 @@ function LocationTreeStructure ({clicked, treeName, newLocation, currentItem, im
     console.log(id)
     // const DataToDisplay = [{title: `${x}`, key: `${1}`}]
 
-  console.log('currentItem: ', currentItem)
+  // console.log('currentItem: ', currentItem)
     // const [currentTree, setCurrenttree] = useState([{title: `Audit Location`, key: `${1}`, description: '', systems: []}])
     const [currentTree, setCurrenttree] = useState([{title: `Audit Location`, key: `${1}`}])
     const [AuditCat, setAuditCat] = useState()
@@ -32,10 +32,10 @@ function LocationTreeStructure ({clicked, treeName, newLocation, currentItem, im
         fetch(`${API_URL_BASE}/auditCategories/getSystemById/${id}`).then(res => res.json()).then((res) => {
           // setCurrenttree([{title: `${res.body.name}`, key: `${1}`, description: '', systems: []}])
           setCurrenttree([{title: `${res.body.name}`, key: `${1}`}])
-          console.log(res.body)
+          // console.log(res.body)
         })
       }
-      console.log('inside useEffect', currentTree)      
+      // console.log('inside useEffect', currentTree)      
       importCurrentTree(currentTree)
       // if(newLocation) setCurrenttree(oldState => [...oldState, newLocation])
       
