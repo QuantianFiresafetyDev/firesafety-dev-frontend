@@ -256,7 +256,7 @@ export default function AuditCategorySystem() {
         setSystemKeys(res.body.systemKeys)
         });
     // eslint-disable-next-line
-  }, [systems, currentTree, itemClicked])
+  }, [systems, currentTree, itemClicked, selectedType])
 
   const onSystemInputChange = (e) => {
     const systemLabel = e.target.value;
@@ -518,8 +518,8 @@ export default function AuditCategorySystem() {
       let newSystem = {
         title: newSystemName,
         key: `${currentItem?.key}-${
-          currentItem.children && currentItem.children?.length !== 0
-            ? currentItem.children.length
+          currentItem?.children && currentItem?.children?.length !== 0
+            ? currentItem?.children?.length
             : 0
         }`,
       };
@@ -633,8 +633,11 @@ export default function AuditCategorySystem() {
         }).then(res => res.json()).then(result => {
           if(result.success){
             successToaster(result.message)
-            let addedQuestions = result.body.filter((each) => each.auditCat === currentAuditCat.name)
-             const newQuestionList = [addedQuestions,...list]
+            // console.log('result: ', result);
+            let addedQuestions = [...list]
+            addedQuestions.push(result?.body.description)
+            // let addedQuestions = result?.body.filter((each) => each.auditCat === currentAuditCat.name)
+             const newQuestionList = [...addedQuestions]
             //  console.log('question list in addQuestion: ', newQuestionList)
              setList(newQuestionList);
              setSelectedType('Select Question Type')
@@ -661,9 +664,12 @@ export default function AuditCategorySystem() {
         }).then(res => res.json()).then(result => {
           if(result.success){
             successToaster(result.message)
-            let addedQuestions = result.body.filter((each) => each.auditCat === currentAuditCat.name)
-             const newQuestionList = [addedQuestions,...list]
-             console.log('question list in addQuestion: ', newQuestionList)
+            // console.log('result yesno desc: ', result);
+            let addedQuestions = [...list]
+            addedQuestions.push(result?.body.description)
+            // let addedQuestions = result.body.filter((each) => each.auditCat === currentAuditCat.name)
+             const newQuestionList = [...addedQuestions]
+            //  console.log('question list in addQuestion: ', newQuestionList)
              setList(newQuestionList);
              setSelectedType('Select Question Type')
              setAdminanswer([])
@@ -1002,7 +1008,7 @@ export default function AuditCategorySystem() {
                           <option> Single Select </option>
                           <option> Multi Select </option>
                           <option> Descriptive </option>
-                          <option> None </option>
+                          {/* <option> None </option> */}
                           {/* <option> Text Box </option>
                           <option> Number scale (1 to 5, 1 to 10) </option>  */}
                        
