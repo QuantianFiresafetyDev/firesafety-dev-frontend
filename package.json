@@ -35,6 +35,7 @@
     "react-table-v6": "^6.8.6",
     "react-toastify": "^7.0.4",
     "react-treeview": "^0.4.7",
+    "recharts": "^2.1.8",
     "redux": "^4.1.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",

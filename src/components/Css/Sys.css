@@ -96,7 +96,7 @@ font-size: 16px;
 .audit_name{
 
     font-size: 25px;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 
 .download_button_text{
@@ -126,6 +126,51 @@ font-size: 16px;
 .audit_details_box{
     position: relative;
     top: -40px;
+}
+
+.score-text {
+    width: 50%;
+    text-align: center;
+    top: -130px;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+
+.score-text-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    /* width: 50ch;
+    height: 100vh; */
+    /* margin-top: -70px; */
+}
+
+.score-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    /* width: 50ch;
+    height: 100vh; */
+    margin-top: -70px;
+}
+
+.result-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: auto;
 }
 
 .audit_history_space{

@@ -7,7 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import '../Css/Sys.css';
 import AuditHistory from './AuditHistory';
 import styled from 'styled-components';
-// import AuditResults from '../AuditResults/AuditResults';
+import AuditResults from './AuditResults';
 
 import { API_URL_BASE } from '../../utils/constant';
 import { useSelector } from 'react-redux';
@@ -109,17 +109,17 @@ function AuditDetails(props) {
   };
 
   useEffect(() => {
-    console.log('AuditDetails audit id: ', id)
+    // console.log('AuditDetails audit id: ', id)
     async function fetchData(){
       await fetch(`${API_URL_BASE}/audit/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       }).then(res => res.json()).then(data => {
-        console.log('useeffect getting audit details: ',data)
+        // console.log('useeffect getting audit details: ',data)
         setData(data.body[0])})
       await fetch(`${API_URL_BASE}/auditCategories/`).then(res => res.json()).then((data) => {
-        console.log('setAuditCategories in useeffect: ', data.body)
+        // console.log('setAuditCategories in useeffect: ', data.body)
         setAuditCategories(data.body)
         setDraftStatus(data.body.isDraft)
       });
@@ -132,16 +132,16 @@ function AuditDetails(props) {
     }
     fetchData()
     axios.get(`${API_URL_BASE}/answers/auditid/${id}`)
-    .then((response) => {console.log(response); setAnswerData(response.data.body)})
+    .then((response) => {console.log('answerData response:', response); setAnswerData(response.data.body)})
     .catch(err=>console.log(err))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async(e) => {
-    console.log('auditCategory: ', auditCategory)
+    // console.log('auditCategory: ', auditCategory)
     const selectedAuditCategory = auditCategories.filter(each => each.name===auditCategory)
-    console.log('inside handleSubmit selectedAuditCategory: ', selectedAuditCategory)
+    // console.log('inside handleSubmit selectedAuditCategory: ', selectedAuditCategory)
     if(!selectedAuditCategory[0].isDraft){
-      console.log('inside fetch block with draftStatus set to: ', draftStatus)
+      // console.log('inside fetch block with draftStatus set to: ', draftStatus)
       const payload = {
         audit_category : auditCategory,
         assignee : newAssignee,
@@ -161,7 +161,7 @@ function AuditDetails(props) {
       })
       .catch(err => errorToaster(err))
     setIsEdit(false)
-    console.log('submit')
+    // console.log('submit')
     }
     await fetch(`${API_URL_BASE}/auditCategories/checksavestatus/${auditCategory}`,{
       method : 'GET',
@@ -173,7 +173,7 @@ function AuditDetails(props) {
     .then(res => res.json())
     .then(data => { 
       successToaster(data.message)
-      console.log('handleSubmit response: ', data)
+      // console.log('handleSubmit response: ', data)
       setDraftStatus(data.body.draft)
     }).catch(err => errorToaster(err))
   }
@@ -185,12 +185,12 @@ function AuditDetails(props) {
   }
 
   const onAssigneeDropdownChange = (e) => {
-    console.log("DEBUG",e.target.value);
+    // console.log("DEBUG",e.target.value);
     setAssignee(e.target.value)
   }
 
   const downloadCSVHandler = () => {
-    console.log('answer Data: ', answerData)
+    // console.log('answer Data: ', answerData)
     let answerCSVData = []
     
     answerData.forEach((each) => {
@@ -215,7 +215,7 @@ function AuditDetails(props) {
     const resultObj = [{"Audit_Results":answerCSVData}]
     // const resultObj = Object.assign({}, answerCSVData)
     const resultJSON = JSON.parse(resultObj)
-    console.log('final audit CSV data: ', JSON.stringify(resultObj))
+    // console.log('final audit CSV data: ', JSON.stringify(resultObj))
     const blob = new Blob([resultJSON], {type: 'text/json'})
     const a = document.createElement('a')
     a.download = `${data.id}_${data.name}.csv`
@@ -253,7 +253,7 @@ function AuditDetails(props) {
     })
   
 
-  console.log('data: ', data)
+  // console.log('data: ', data)
 
   const { name: audit_name, contact_person, address, assignee, created_date, start_date, progress, floors, audit_category } = data;
   // const date = created_date ? new Date(created_date).toDateString() : new Date();
@@ -294,6 +294,15 @@ function AuditDetails(props) {
                 fontWeight: "bold",
               }}
               label="History"
+              {...a11yProps(1)}
+            />
+            <Tab
+              style={{
+                textTransform: "capitalize",
+                fontSize: "16px",
+                fontWeight: "bold",
+              }}
+              label="Results"
               {...a11yProps(1)}
             />
             {/* <Tab label="Audit Results" {...a11yProps(2)} /> */}
@@ -421,10 +430,18 @@ function AuditDetails(props) {
           inspection_date={moment(data.start_date).format("DD-MM-YYYY")}
         />
       </TabPanel>
+      {/* <TabPanel value={value} index={2}> */}
 
-      {/* <TabPanel value={value} index={2}>
+        {/* Results/Dashboard Tab */}
+        {/* <AuditHistory
+          auditToBeDone={data}
+          inspection_date={moment(data.start_date).format("DD-MM-YYYY")}
+        /> */}
+      {/* </TabPanel> */}
+
+      <TabPanel value={value} index={2}>
       <AuditResults/> 
-    </TabPanel> */}
+    </TabPanel>
     </>
   );
 }

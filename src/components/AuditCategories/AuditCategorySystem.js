@@ -178,6 +178,7 @@ export default function AuditCategorySystem() {
   const [relatedLocations, setRelatedLocations] = useState([])
   const [draftStatus, setDraftStatus] = useState(true)
   const [systemKeys, setSystemKeys] = useState([])
+  const [weightage, setWeightage] = useState(1)
 
 
   useEffect(() => {
@@ -609,7 +610,8 @@ export default function AuditCategorySystem() {
         questionType : selectedType,
         multiSingleOptions: [...tempDescArr],
         system : itemClicked,
-        auditCat: currentAuditCat.name
+        auditCat: currentAuditCat.name,
+        weightage: weightage
       }
     } else {
       payload = {
@@ -617,7 +619,8 @@ export default function AuditCategorySystem() {
         questionType : selectedType,
         multiSingleOptions: adminanswer,
         system : itemClicked,
-        auditCat: currentAuditCat.name
+        auditCat: currentAuditCat.name,
+        weightage: weightage
       }
     }
     // console.log(payload)
@@ -643,6 +646,7 @@ export default function AuditCategorySystem() {
              setSelectedType('Select Question Type')
              setAdminanswer([])
              setTypeQuestion('')
+             setWeightage(1)
           } 
           if(result.error){
             errorToaster(result.message)
@@ -674,6 +678,7 @@ export default function AuditCategorySystem() {
              setSelectedType('Select Question Type')
              setAdminanswer([])
              setTypeQuestion('')
+             setWeightage(1)
           } 
           if(result.error){
             errorToaster(result.message)
@@ -992,18 +997,17 @@ export default function AuditCategorySystem() {
                   <div className="d-flex justify-content-between">
                     <div className="questions_dropdown_add">
                       <div>
+                      <div>Select Question Type</div>
                         <select
                           name="qtype"
                           required
                           id="qtype"
                           className="form-control"
-                          style={{width: '60%'}}
+                          style={{width: '65%'}}
                           value={selectedType}
                           onChange={(text)=>setSelectedType(text.target.value)}
                         >
-                          <option hidden value>
-                            Select Question Type
-                          </option>
+                          <option hidden value>Question Types</option>
                           <option> Yes/No </option>
                           <option> Single Select </option>
                           <option> Multi Select </option>
@@ -1014,6 +1018,27 @@ export default function AuditCategorySystem() {
                        
                         </select>
                       </div>
+                      {/* <div className="questions_dropdown_add"> */}
+                      <div className="w-100 question_dropdown"> </div>
+                      <div>
+                        <div>Weightage</div>
+                          <select
+                            name="wtype"
+                            required
+                            id="wtype"
+                            className="form-control"
+                            style={{width: '30%'}}
+                            value={weightage}
+                            onChange={(text)=>setWeightage(text.target.value)}
+                          >
+                            <option hidden value>Select Question Weightage</option>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((each, key) => {
+                              console.log('inside weigtage options map method');
+                              return (<option> {each} </option>)
+                            })}
+                          </select>
+                        </div>
+                        {/* </div> */}
                       <div style={{marginTop: '10px'}}>
                         {selectedType==='Single Select' && 
                           initialOptionsArr.map((eachOption, idx) => {

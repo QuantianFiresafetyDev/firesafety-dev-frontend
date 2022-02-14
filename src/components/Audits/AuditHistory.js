@@ -104,7 +104,8 @@ function AuditHistory(props) {
         // console.log(props)
         // console.log(auditInspectionReportData)
         setAnswerHistoryData(historyRowData);
-      })
+      })  
+      
     }
     fetchHistoryAnserData()
   }, [])
