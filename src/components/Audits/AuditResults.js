@@ -156,8 +156,24 @@ function AuditResults(props) {
   useEffect(() => {
     //fetch chart data
     axios.get(`${API_URL_BASE}/answers/auditresults/${id}`).then((res) => {
-      // console.log('response in AuditResult: ', res)
-      setResultData(res.data.body.resultData)
+      console.log('response in AuditResult: ', res)
+      let temp_unAnsData = [...res.data.body.unAnsData]
+      let temp_total_w = res.data.body.resultData[0].total_w
+      let temp_total_nw = res.data.body.resultData[0].total_nw
+      let unAnsData = []
+      temp_unAnsData.forEach((each) => {
+        let temp = {
+        location: each.location,
+        score_nw: each.score_nw,
+        score_w: each.score_w,
+        system: each.system,
+        total_w: temp_total_w,
+        total_nw: temp_total_nw
+      }
+      unAnsData.push(temp)
+      })
+      // console.log('modified unAnsData: ', unAnsData)
+      setResultData([...res.data.body.resultData, ...unAnsData])
       setLocResultData(res.data.body.loc_resultData)
       setQuestionData(res.data.body.questionData)
       let total_weightage = 0
